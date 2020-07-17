@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: ldap-server-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "3600"
+spec:
+  rules:
+  - host: "ldap.server.hostname.com"
+    http:
+        paths:
+          - path: /
+            backend:
+              serviceName: ldap-server-service
+              servicePort: 389
+          - path: /phpldapadmin/
+            backend:
+              serviceName: phpldapadmin-service
+              servicePort: 80

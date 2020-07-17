@@ -1,0 +1,54 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "phpldapadmin-service"
+  labels:
+    app: "phpldapadmin"
+    tier: app
+spec:
+  type: NodePort
+  selector:
+    app: "phpldapadmin"
+    tier: app
+  ports:
+    - name: web1
+      port: 80
+      targetPort: 80
+      nodePort: 30080
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "phpldapadmin-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "phpldapadmin"
+      tier: app
+  template:
+    metadata:
+      name: "phpldapadmin"
+      labels:
+        app: "phpldapadmin"
+        tier: app
+    spec:
+      containers:
+        - name: "phpldapadmin"
+          image: phpldapadmin:latest
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: web1
+              containerPort: 80
+          env:
+            - name: PHPLDAPADMIN_HTTPS
+              value: "false"
+            - name: PHPLDAPADMIN_LDAP_HOSTS
+              value: ldap-server-service
+            - name: PHPLDAPADMIN_SERVER_PATH
+              value: "/phpldapadmin"              
+            - name: INGRESS_HOSTNAME
+              value: "ldap.server.hostname.com"  
+              

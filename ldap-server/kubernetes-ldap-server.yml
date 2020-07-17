@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "ldap-server-service"
+  labels:
+    app: "ldap-server"
+    tier: app
+spec:
+  type: NodePort
+  selector:
+    app: "ldap-server"
+    tier: app
+  ports:
+    - name: ldap
+      port: 389
+      targetPort: 389
+      nodePort: 30389
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "ldap-server-deployment"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "ldap-server"
+      tier: app
+  template:
+    metadata:
+      name: "ldap-server"
+      labels:
+        app: "ldap-server"
+        tier: app
+    spec:
+      containers:
+        - name: "ldap-server"
+          image: "ldap-server:latest"
+          volumeMounts:
+            - name: ldap-data
+              mountPath: /var/lib/ldap
+            - name: ldap-config
+              mountPath: /etc/ldap/slapd.d
+          imagePullPolicy: "IfNotPresent"
+          ports:
+            - name: ldap
+              containerPort: 389
+          env:
+            - name: INGRESS_HOSTNAME
+              value: "ldap.server.hostname.com"
+            - name: LDAP_ADMIN_PASSWORD
+              value: "password"
+            - name: LDAP_CONFIG_PASSWORD
+              value: "password"
+            - name: LDAP_BASE_DN
+              value: "dc=persistent,dc=com"
+            - name: LDAP_DOMAIN 
+              value: "persistent.com"
+            - name : HOSTNAME
+              value : "ldap.server.hostname.com" 
+      volumes:
+        - name: ldap-data
+          hostPath:
+            path: "/data/ldap/db"
+        - name: ldap-config
+          hostPath:
+            path: "/data/ldap/config"
+   
+              
