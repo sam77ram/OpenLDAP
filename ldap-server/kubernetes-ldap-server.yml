@@ -55,9 +55,9 @@ spec:
             - name: LDAP_CONFIG_PASSWORD
               value: "password"
             - name: LDAP_BASE_DN
-              value: "dc=persistent,dc=com"
+              value: "dc=<organization_name>,dc=com"
             - name: LDAP_DOMAIN 
-              value: "persistent.com"
+              value: "<organization_name>.com"
             - name : HOSTNAME
               value : "ldap.server.hostname.com" 
       volumes:
